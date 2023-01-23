@@ -1,0 +1,78 @@
+import mysql.connector
+import os
+
+db = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="sekolah"
+)
+
+def insert_data(db):
+  id_siswa = input("Masukan id siswa = ")  
+  Nama_siswa = input("Masukan nama siswa = ")
+  Jenis_kelamin = input("Masukan Jenis Kelamin = ")
+  Alamat = input("Masukan Alamat Siswa = ")
+  val = (id_siswa,Nama_siswa, Jenis_kelamin, Alamat)
+  cursor = db.cursor()
+  sql = "INSERT INTO siswa (id_siswa,Nama_siswa,Jenis_kelamin, alamat) VALUES (%s,%s, %s,%s)"
+  cursor.execute(sql, val)
+  db.commit()
+  print("{} data berhasil disimpan".format(cursor.rowcount))
+
+
+def show_data(db):
+  cursor = db.cursor()
+  sql = "SELECT * FROM siswa"
+  cursor.execute(sql)
+  results = cursor.fetchall()
+  
+  if cursor.rowcount < 0:
+    print("Tidak ada data")
+  else:
+    for data in results:
+      print(data)
+
+
+def search_data(db):
+  cursor = db.cursor()
+  keyword = input("Kata kunci: ")
+  sql = "SELECT * FROM siswa WHERE Nama_siswa LIKE %s OR Alamat LIKE %s"
+  val = ("%{}%".format(keyword), "%{}%".format(keyword))
+  cursor.execute(sql, val)
+  results = cursor.fetchall()
+  
+  if cursor.rowcount < 0:
+    print("Tidak ada data")
+  else:
+    for data in results:
+      print(data)
+
+
+def show_menu(db):
+  print("=== APLIKASI DATABASE PYTHON ===")
+  print("1. Insert Data")
+  print("2. Tampilkan Data")
+  print("3. Cari Data")
+  print("0. Keluar")
+  print("------------------")
+  menu = input("Pilih menu> ")
+
+  #clear screen
+  os.system("clear")
+
+  if menu == "1":
+    insert_data(db)
+  elif menu == "2":
+    show_data(db)
+  elif menu == "3":
+    search_data(db)
+  elif menu == "0":
+    exit()
+  else:
+    print("Menu salah!")
+
+
+if __name__ == "__main__":
+  while(True):
+    show_menu(db)
